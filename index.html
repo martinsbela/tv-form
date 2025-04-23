@@ -27,9 +27,7 @@
             border-radius: 10px;
             border: none;
             cursor: pointer;
-            margin: 5px; 
-            display: inline-block;
-        } 
+        }
         .botao:hover {
             background-color: #45a049;
         }
@@ -37,8 +35,7 @@
             background-color: #ff9800 !important;
         }
         #proximo, #reiniciar, #enviarFeedback {
-             display: block; 
-             margin: 20px auto;
+            display: none;
         }
         #verConteudo {
             display: none;
@@ -144,6 +141,7 @@
             };
             let videoUrl = videos[personalidade];
 
+            document.getElementById("resultado").innerText = `Seu gênero preferido é: ${descricao[personalidade]}`;
             document.getElementById("proximo").style.display = "none";
             document.getElementById("reiniciar").style.display = "block";
             document.getElementById("verConteudo").style.display = "block";
