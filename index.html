@@ -178,52 +178,32 @@
             document.body.innerHTML = "<h2>Aproveite a sua nova TV 3.0 a partir de suas preferências!</h2>";
         }
 
-function enviarParaPlanilha(nome, idade, email, cpf, genero, perfil, respostasPerguntas, feedbackDados) {
-    const url = "https://script.google.com/macros/s/AKfycbxsmIBI2MePn8_G24BwGb6Fd6hKOSHDTugs9T5YVNhcpeiQFNrLPPakZkBz13Wdvqpm/exec"; // link do App Script
+ function enviarParaPlanilha(nome, idade, email, cpf, genero, perfil, respostasPerguntas, feedbackDados) {
+        const url = "https://script.google.com/macros/s/AKfycbyAC3syosaUe48AXBGA7wtxK6nuAILrUpiQOuZN0FaSOd4PxT73TgjKk7MDRQdk8pil/exec";
 
-    const formData = new FormData();
-    formData.append("nome", nome);
-    formData.append("idade", idade);
-    formData.append("email", email);
-    formData.append("cpf", cpf);
-    formData.append("genero", genero);
-    formData.append("perfil", perfil);
-    formData.append("respostasPerguntas", respostasPerguntas.join(", "));
+        const dados = {
+            nome: nome,
+            idade: idade,
+            email: email,
+            cpf: cpf,
+            genero: genero,
+            perfil: perfil,
+            respostasPerguntas: respostasPerguntas.join(", "),
+            'feedback.compatibilidade': feedbackDados.compatibilidade,
+            'feedback.finaisAlternativos': feedbackDados.finaisAlternativos,
+            'feedback.funcionalidadeTvAberta': feedbackDados.funcionalidadeTvAberta,
+            'feedback.interesseFinaisAlternativos': feedbackDados.interesseFinaisAlternativos
+        };
 
-    // Feedback
-    formData.append("feedback.compatibilidade", feedbackDados.compatibilidade);
-    formData.append("feedback.finaisAlternativos", feedbackDados.finaisAlternativos);
-    formData.append("feedback.funcionalidadeTvAberta", feedbackDados.funcionalidadeTvAberta);
-    formData.append("feedback.interesseFinaisAlternativos", feedbackDados.interesseFinaisAlternativos);
-
-    fetch('https://script.google.com/macros/s/AKfycbxsmIBI2MePn8_G24BwGb6Fd6hKOSHDTugs9T5YVNhcpeiQFNrLPPakZkBz13Wdvqpm/exec', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    nome: 'João',
-    idade: 30,
-    email: 'joao@example.com',
-    cpf: '123.456.789-00',
-    genero: 'Masculino',
-    perfil: 'Usuário',
-    respostasPerguntas: 'Respostas aqui',
-    feedback: {
-      compatibilidade: 'Boa',
-      finaisAlternativos: 'Interessantes',
-      funcionalidadeTvAberta: 'Útil',
-      interesseFinaisAlternativos: 'Alto'
+        fetch(url, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dados)
+        });
     }
-  })
-})
-.then(response => response.text())
-.then(data => {
-  console.log('Sucesso:', data);
-})
-.catch((error) => {
-  console.error('Erro:', error);
-});
 
 
 
