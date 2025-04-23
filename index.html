@@ -73,7 +73,7 @@
             let cpf = document.getElementById("cpf").value.trim();
             let genero = document.querySelector('input[name="genero"]:checked');
 
-            if (nome === "" || idade === "" || isNaN(idade) || idade < 18 || email === "" || cpf.length !== 3 || isNaN(cpf) || !genero) {
+            if (nome === "" || idade === "" || email === "" || cpf.length !== 3 || !genero) {
                 alert("Por favor, preencha todos os campos corretamente.");
                 return;
             }
@@ -81,12 +81,16 @@
                 alert("Por favor, insira um e-mail válido.");
                 return;
             }
-            if (!validarIdade(idade)) {
+            if (idade < 18) {
                 alert("A escolha de preferências está disponível apenas para maiores de 18 anos.");
                 return;
             }            
-            if (!validarcpf(cpf.lenth)) {
-                alert("Por favor, utilize apenas números no campo do CPF.");
+            if (isNaN(cpf)) {
+                alert("Por favor, utilize apenas números para CPF.");
+                return;
+            }
+            if (isNaN(idade)) {
+                alert("Por favor, utilize apenas números para idade.");
                 return;
             }
             
