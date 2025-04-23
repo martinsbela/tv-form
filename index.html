@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Personalidade</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+        }
+        h2, p, h3 {
+            margin: 20px;
+        }
+        .pergunta, .feedback {
+            display: none;
+            margin-bottom: 20px;
+        }
+        .botao {
+            background-color: #90ee90;
+            font-weight: bold;
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .botao:hover {
+            background-color: #45a049;
+        }
+        .selecionado {
+            background-color: #ff9800 !important;
+        }
+        #proximo, #reiniciar, #enviarFeedback {
+            display: none;
+        }
+        #verConteudo {
+            display: none;
+            background-color: #90ee90;
+            font-weight: bold;
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        #verConteudo:hover {
+            background-color: #45a049;
+        }
+        #videoContainer {
+            margin-top: 20px;
+        }
+        .feedback input[type="radio"] {
+            margin: 5px;
+        }
+    </style>
+    <script>
+        let pontos = { AC: 0, CM: 0, AV: 0, DR: 0 };
+        let paginaAtual = 0;
+
+        function validarEmail(email) {
+            const dominiosValidos = ["gmail.com", "hotmail.com", "outlook.com", "protonmail.com", "aol.com", "zoho.com", "icloud.com", "yahoo.com.br", "gmx.com"];
+            const emailPartes = email.split("@");
+            return emailPartes.length === 2 && dominiosValidos.includes(emailPartes[1]);
+        }
+
+        function iniciarTeste() {
+            let nome = document.getElementById("nome").value.trim();
+            let idade = document.getElementById("idade").value;
+            let email = document.getElementById("email").value.trim();
+            let cpf = document.getElementById("cpf").value.trim();
+            let genero = document.querySelector('input[name="genero"]:checked');
+
+            if (nome === "" || idade === "" || isNaN(idade) || idade < 18 || email === "" || cpf.length !== 3 || isNaN(cpf) || !genero) {
+                alert("Por favor, preencha todos os campos corretamente.");
+                return;
+            }
+            if (!validarEmail(email)) {
+                alert("Por favor, insira um e-mail válido.");
+                return;
+            }
+
+            document.getElementById("intro").style.display = "none";
+            mostrarPergunta();
+        }
+
+        function mostrarPergunta() {
+            let perguntas = document.getElementsByClassName("pergunta");
+            for (let i = 0; i < perguntas.length; i++) {
+                perguntas[i].style.display = "none";
+            }
+            if (paginaAtual < perguntas.length) {
+                perguntas[paginaAtual].style.display = "block";
+                document.getElementById("proximo").style.display = "none";
+            } else {
+                calcularPersonalidade();
+            }
+        }
+
+        function selecionarResposta(valor, botao) {
+            pontos[valor]++;
+            let botoes = document.querySelectorAll(`.pergunta:nth-child(${paginaAtual + 2}) .botao`);
+            botoes.forEach(b => b.classList.remove("selecionado"));
+            botao.classList.add("selecionado");
+            document.getElementById("proximo").style.display = "block";
+        }
+
+        function proximaPergunta() {
+            paginaAtual++;
+            mostrarPergunta();
+        }
+
+        function calcularPersonalidade() {
+            let personalidade = Object.keys(pontos).reduce((a, b) => pontos[a] >= pontos[b] ? a : b);
+            let descricao = {
+                AC: "Ação",
+                CM: "Comédia",
+                AV: "Aventura",
+                DR: "Drama"
+            };
+            let videos = {
+                AC: "https://www.youtube.com/embed/zBjJUV-lzHo",
+                CM: "https://www.youtube.com/embed/zBjJUV-lzHo",
+                AV: "https://www.youtube.com/embed/zBjJUV-lzHo",
+                DR: "https://www.youtube.com/embed/zBjJUV-lzHo"
+            };
+            let videoUrl = videos[personalidade];
+
+            document.getElementById("resultado").innerText = `Seu gênero preferido é: ${descricao[personalidade]}`;
+            document.getElementById("proximo").style.display = "none";
+            document.getElementById("reiniciar").style.display = "block";
+            document.getElementById("verConteudo").style.display = "block";
+
+            document.getElementById("verConteudo").onclick = function () {
+                let videoContainer = document.getElementById("videoContainer");
+                videoContainer.innerHTML = `<iframe width="560" height="315" src="${videoUrl}" frameborder="0" allowfullscreen></iframe>`;
+                document.getElementById("verConteudo").disabled = true;
+                document.getElementById("feedback").style.display = "block";
+                document.getElementById("enviarFeedback").style.display = "block";
+            };
+        }
+
+        function enviarFeedback() {
+            let compatibilidade = document.querySelector('input[name="compatibilidade"]:checked');
+            let finaisAlternativos = document.querySelector('input[name="finaisAlternativos"]:checked');
+            let funcionalidadeTvAberta = document.querySelector('input[name="funcionalidadeTvAberta"]:checked');
+            let interesseFinaisAlternativos = document.querySelector('input[name="interesseFinaisAlternativos"]:checked');
+
+            if (!compatibilidade || !finaisAlternativos || !funcionalidadeTvAberta || !interesseFinaisAlternativos) {
+                alert("Por favor, responda todas as perguntas do feedback.");
+                return;
+            }
+
+            let feedbackDados = {
+                compatibilidade: compatibilidade.value,
+                finaisAlternativos: finaisAlternativos.value,
+                funcionalidadeTvAberta: funcionalidadeTvAberta.value,
+                interesseFinaisAlternativos: interesseFinaisAlternativos.value
+            };
+
+            let nome = document.getElementById("nome").value;
+            let idade = document.getElementById("idade").value;
+            let email = document.getElementById("email").value;
+            let cpf = document.getElementById("cpf").value;
+            let genero = document.querySelector('input[name="genero"]:checked').value;
+            let perfil = Object.keys(pontos).reduce((a, b) => pontos[a] >= pontos[b] ? a : b);
+
+            let botoesSelecionados = document.querySelectorAll(".selecionado");
+            let respostasPerguntas = [];
+            botoesSelecionados.forEach(botao => {
+                respostasPerguntas.push(botao.innerText);
+            });
+
+            enviarParaPlanilha(nome, idade, email, cpf, genero, perfil, respostasPerguntas, feedbackDados);
+
+            document.body.innerHTML = "<h2>Aproveite a sua nova TV 3.0 a partir de suas preferências!</h2>";
+        }
+
+function enviarParaPlanilha(nome, idade, email, cpf, genero, perfil, respostasPerguntas, feedbackDados) {
+    const url = "https://script.google.com/macros/s/AKfycbzu_AgWtwg5z9GuImnKmtoAr6JLUjC-FMWwXleb9Z2LdxxvACZVjlMHWg1MUH3qUyuC/exec"; // substitua pelo seu link
+
+    const formData = new FormData();
+    formData.append("nome", nome);
+    formData.append("idade", idade);
+    formData.append("email", email);
+    formData.append("cpf", cpf);
+    formData.append("genero", genero);
+    formData.append("perfil", perfil);
+    formData.append("respostasPerguntas", respostasPerguntas.join(", "));
+
+    // Feedback
+    formData.append("feedback.compatibilidade", feedbackDados.compatibilidade);
+    formData.append("feedback.finaisAlternativos", feedbackDados.finaisAlternativos);
+    formData.append("feedback.funcionalidadeTvAberta", feedbackDados.funcionalidadeTvAberta);
+    formData.append("feedback.interesseFinaisAlternativos", feedbackDados.interesseFinaisAlternativos);
+
+    fetch(url, {
+        method: "POST",
+        body: formData
+    })
+    .then(() => alert("Feedback enviado com sucesso!"))
+    .catch(error => {
+        console.error("Erro ao enviar dados:", error);
+        alert("Erro ao enviar os dados.");
+    });
+}
+
+
+        function reiniciarTeste() {
+            pontos = { AC: 0, CM: 0, AV: 0, DR: 0 };
+            paginaAtual = 0;
+            document.getElementById("resultado").innerText = "";
+            document.getElementById("videoContainer").innerHTML = "";
+            document.getElementById("feedback").style.display = "none";
+            document.getElementById("enviarFeedback").style.display = "none";
+            document.getElementById("reiniciar").style.display = "none";
+            document.getElementById("intro").style.display = "block";
+            document.getElementById("verConteudo").style.display = "none";
+            document.getElementById("verConteudo").disabled = false;
+        }
+    </script>
+</head>
+<body>
+    <div id="intro">
+        <h2>Bem-vindo à página de configuração da sua TV 3.0!</h2>
+        <p>Preencha os campos abaixo:</p>
+        <input type="text" id="nome" placeholder="Nome"><br><br>
+        <input type="number" id="idade" placeholder="Idade"><br><br>
+        <input type="email" id="email" placeholder="E-mail"><br><br>
+        <input type="text" id="cpf" maxlength="3" placeholder="3 primeiros dígitos do CPF"><br><br>
+        <p>Gênero:</p>
+        <input type="radio" name="genero" value="Feminino"> Feminino
+        <input type="radio" name="genero" value="Masculino"> Masculino
+        <input type="radio" name="genero" value="Outro"> Outro
+        <br><br>
+        <button id="começar" onclick="iniciarTeste()">Começar</button>
+    </div>
+    <div class="pergunta">
+        <p>Qual dos filmes abaixo você gosta mais?</p>
+        <button class="botao" onclick="selecionarResposta('AC', this)">Velozes e Furiosos</button>
+        <button class="botao" onclick="selecionarResposta('CM', this)">Shrek</button>
+        <button class="botao" onclick="selecionarResposta('AV', this)">Harry Potter</button>
+        <button class="botao" onclick="selecionarResposta('DR', this)">Titanic</button>
+    </div>
+    <div class="pergunta">
+        <p>Qual das séries abaixo você gosta mais?</p>
+        <button class="botao" onclick="selecionarResposta('DR', this)">Breaking Bad</button>
+        <button class="botao" onclick="selecionarResposta('AC', this)">Cobra Kai</button>
+        <button class="botao" onclick="selecionarResposta('CM', this)">Friends</button>
+        <button class="botao" onclick="selecionarResposta('AV', this)">Stranger Things</button>
+    </div>
+    <div class="pergunta">
+        <p>Das novelas abaixo, qual combina mais com seu gosto?</p>
+        <button class="botao" onclick="selecionarResposta('DR', this)">Avenida Brasil</button>
+        <button class="botao" onclick="selecionarResposta('CM', this)">Tapas e Beijos</button>
+        <button class="botao" onclick="selecionarResposta('AV', this)">Salve Jorge</button>
+        <button class="botao" onclick="selecionarResposta('AC', this)">Arcanjo Renegado</button>
+    </div>
+    <div class="pergunta">
+        <p>Se pudesse escolher um superpoder, qual seria?</p>
+        <button class="botao" onclick="selecionarResposta('AC', this)">Super velocidade</button>
+        <button class="botao" onclick="selecionarResposta('CM', this)">Fazer qualquer um rir</button>
+        <button class="botao" onclick="selecionarResposta('AV', this)">Magia</button>
+        <button class="botao" onclick="selecionarResposta('DR', this)">Ler mentes</button>
+    </div>
+    <div class="pergunta">
+        <p>Quando busca um conteúdo, seu objetivo principal é:</p>
+        <button class="botao" onclick="selecionarResposta('CM', this)">Dar risadas</button>
+        <button class="botao" onclick="selecionarResposta('DR', this)">Histórias emocionantes e profundas</button>
+        <button class="botao" onclick="selecionarResposta('AV', this)">Aventuras de ficção</button>
+        <button class="botao" onclick="selecionarResposta('AC', this)">Algo agitado que segure sua atenção</button>
+    </div>
+    <button id="proximo" onclick="proximaPergunta()">Próximo</button>
+    <h3 id="resultado"></h3>
+    <button id="verConteudo">Ver meu conteúdo personalizado</button>
+    <div id="videoContainer"></div>
+    <!-- Feedback Section -->
+    <div id="feedback" class="feedback">
+        <h3>O que você achou deste conteúdo?</h3>
+        <p>De 1 a 5, o quanto este conteúdo foi compatível com seus interesses apresentados anteriormente?</p>
+        <label><input type="radio" name="compatibilidade" value="1"> 1</label>
+        <label><input type="radio" name="compatibilidade" value="2"> 2</label>
+        <label><input type="radio" name="compatibilidade" value="3"> 3</label>
+        <label><input type="radio" name="compatibilidade" value="4"> 4</label>
+        <label><input type="radio" name="compatibilidade" value="5"> 5</label>
+        <p>Você teria interesse em assistir os outros finais alternativos para essa história?</p>
+        <label><input type="radio" name="finaisAlternativos" value="Sim"> Sim</label>
+        <label><input type="radio" name="finaisAlternativos" value="Não"> Não</label>
+        <p>Você gostaria que essa funcionalidade fosse disponível em TV Aberta?</p>
+        <label><input type="radio" name="funcionalidadeTvAberta" value="Sim"> Sim</label>
+        <label><input type="radio" name="funcionalidadeTvAberta" value="Não"> Não</label>
+        <p>Você teria curiosidade de assistir, em uma plataforma de streaming, os outros finais alternativos que não foram direcionados ao seu perfil na grade de TV Aberta?</p>
+        <label><input type="radio" name="interesseFinaisAlternativos" value="Sim"> Sim</label>
+        <label><input type="radio" name="interesseFinaisAlternativos" value="Não"> Não</label>
+    </div>
+    <button id="enviarFeedback" onclick="enviarFeedback()">Enviar Feedback</button>
+    <button id="reiniciar" onclick="reiniciarTeste()">Responder novamente</button>
+</body>
+</html>
